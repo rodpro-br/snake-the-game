@@ -2,6 +2,11 @@ let canvas = document.getElementById("snake"); //criar elemento que irá rodar o
 let context = canvas.getContext("2d"); //....
 let box = 32;
 let snake = []; //criar cobrinha como lista, já que ela vai ser uma série de coordenadas, que quando pintadas, criam os quadradinhos
+
+let lastRenderTime = 0;
+const SNAKE_SPEED = 6;
+
+
 snake[0] ={
     x: 8 * box,
     y: 8 * box
@@ -39,7 +44,7 @@ function update(event){
     if(event.keyCode == 40 && direction != 'up') direction = 'down';
 }
 
-function iniciarJogo(){    
+function iniciarJogo(currentTime){    
 
     if(snake[0].x > 15*box && direction == "right") snake[0].x = 0;
     if(snake[0].x < 0 && direction == 'left') snake[0].x = 16 * box;
@@ -48,10 +53,17 @@ function iniciarJogo(){
     
     for(i = 1; i < snake.length; i++){
         if(snake[0].x == snake[i].x && snake[0].y == snake[i].y){
-            clearInterval(jogo);
+            //clearInterval(jogo);
             alert('Game Over :(');
+            return;
         }
     }
+
+    window.requestAnimationFrame(iniciarJogo);
+    const secondsSinceLastRender = (currentTime - lastRenderTime) / 1000;
+    if (secondsSinceLastRender < 1 / SNAKE_SPEED) return;
+
+    lastRenderTime = currentTime;
 
     criarBG();
     criarCobrinha();
@@ -80,4 +92,6 @@ function iniciarJogo(){
     snake.unshift(newHead); //método unshift adiciona como primeiro quadradinho da cobrinha
 }
 
-let jogo = setInterval(iniciarJogo, 100);
+//let jogo = setInterval(iniciarJogo, 200);
+
+window.requestAnimationFrame(iniciarJogo);
